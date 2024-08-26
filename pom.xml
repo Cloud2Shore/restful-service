@@ -12,6 +12,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+         <jkube.version>1.17.0</jkube.version>
     </properties>
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -25,5 +26,57 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
     </dependencies>
+ <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <excludeDevtools>false</excludeDevtools>
+                    <layers>
+                      <enabled>false</enabled>
+                    </layers>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eclipse.jkube</groupId>
+                <artifactId>kubernetes-maven-plugin</artifactId>
+                <version>${jkube.version}</version>
+                <configuration>
+                  <generator>
+                    <config>
+                      <spring-boot>
+                        <name>%g/%a:%v</name>
+                      </spring-boot>
+                    </config>
+                  </generator> 
+                </configuration>
+            </plugin>
+            
+            <plugin>
+                <groupId>org.eclipse.jkube</groupId>
+                <artifactId>openshift-maven-plugin</artifactId>
+                <version>${jkube.version}</version>
+            </plugin>
+            <plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>properties-maven-plugin</artifactId>
+    <version>1.0.0</version>
+    <executions>
+        <execution>
+            <phase>generate-resources</phase>
+            <goals>
+                <goal>write-project-properties</goal>
+            </goals>
+            <configuration>
+                <outputFile>${project.build.outputDirectory}/properties-from-pom.properties</outputFile>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+        </plugins>
+    </build>
+
 
 </project>
